@@ -135,13 +135,13 @@ zmsg_send (zmsg_t **self_p, void *dest)
     void *handle = zsock_resolve (dest);
     if (self) {
         assert (zmsg_is (self));
-        zframe_t *frame = (zframe_t *) zlist_pop (self->frames);
-        while (frame) {
+        zframe_t *frame;
+        while ((frame = (zframe_t *) zlist_head (self->frames))) {
             rc = zframe_send (&frame, handle,
-                              zlist_size (self->frames) ? ZFRAME_MORE : 0);
+                              zlist_size (self->frames) > 1 ? ZFRAME_MORE : 0);
             if (rc != 0)
                 break;
-            frame = (zframe_t *) zlist_pop (self->frames);
+            (void) zlist_pop (self->frames);
         }
         if (rc == 0)
             zmsg_destroy (self_p);
@@ -761,10 +761,10 @@ zmsg_eq (zmsg_t *self, zmsg_t *other)
 {
     if (!self || !other)
         return false;
-    
+
     if (zlist_size (self->frames) != zlist_size (other->frames))
         return false;
-    
+
     zframe_t *self_frame = (zframe_t *) zlist_first (self->frames);
     zframe_t *other_frame = (zframe_t *) zlist_first (other->frames);
     while (self_frame && other_frame) {
