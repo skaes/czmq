@@ -253,6 +253,12 @@ CZMQ_EXPORT void
 CZMQ_EXPORT int
     zsys_max_msgsz (void);
 
+//  Configure whether to user zero copy strategy in libzmq. If the environment
+//  variable ZSYS_ZERO_COPY is defined, that provides the default.  Otherwise
+//  the default is 1.
+CZMQ_EXPORT void
+    zsys_set_zero_copy(int zero_copy);
+
 //  Configure the default linger timeout in msecs for new zsock instances.
 //  You can also set this separately on each zsock_t instance. The default
 //  linger time is zero, i.e. any pending messages will be dropped. If the
